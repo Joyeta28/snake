@@ -6,6 +6,8 @@
 #include <vector>
 #include <ctime>
 
+using namespace std;
+
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 const int CELL_SIZE = 20;
@@ -24,7 +26,6 @@ struct Food {
 
 struct Obstacle {
     int x, y;
-    bool isMoving;
     Direction direction;
 };
 
@@ -84,124 +85,124 @@ int main(int argc, char* argv[]) {
 
 void initSDL() {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
-        std::cerr << "SDL could not initialize! SDL Error: " << SDL_GetError() << std::endl;
+        cout<< "SDL could not initialize! SDL Error: " << SDL_GetError() ; cout<<endl;
         exit(1);
     }
 
     if (TTF_Init() == -1) {
-        std::cerr << "SDL_ttf could not initialize! SDL_ttf Error: " << TTF_GetError() << std::endl;
+        cout<< "SDL_ttf could not initialize! SDL_ttf Error: " << TTF_GetError() ; cout<<endl;
         exit(1);
     }
 
     if (IMG_Init(IMG_INIT_PNG) == 0) {
-        std::cerr << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << std::endl;
+        cout<< "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() ; cout<<endl;
         exit(1);
     }
 
     window = SDL_CreateWindow("Snake Game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (window == nullptr) {
-        std::cerr << "Window could not be created! SDL Error: " << SDL_GetError() << std::endl;
+        cout << "Window could not be created! SDL Error: " << SDL_GetError(); cout<< endl;
         exit(1);
     }
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (renderer == nullptr) {
-        std::cerr << "Renderer could not be created! SDL Error: " << SDL_GetError() << std::endl;
+        cout<< "Renderer could not be created! SDL Error: " << SDL_GetError() ; cout<< endl;
         exit(1);
     }
 
     font = TTF_OpenFont("font.ttf", 28);
     if (font == nullptr) {
-        std::cerr << "Failed to load font! SDL_ttf Error: " << TTF_GetError() << std::endl;
+        cout<<  "Failed to load font! SDL_ttf Error: " << TTF_GetError() ; cout<< endl;
         exit(1);
     }
 
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
-        std::cerr << "SDL_mixer could not initialize! SDL_mixer Error: " << Mix_GetError() << std::endl;
+       cout<<  "SDL_mixer could not initialize! SDL_mixer Error: " << Mix_GetError() ; cout<< endl;
         exit(1);
     }
 
     eatSound = Mix_LoadWAV("eating-sound-effect-36186.mp3");
     if (eatSound == nullptr) {
-        std::cerr << "Failed to load sound effect! SDL_mixer Error: " << Mix_GetError() << std::endl;
+       cout<< "Failed to load sound effect! SDL_mixer Error: " << Mix_GetError() ; cout<< endl;
         exit(1);
     }
 
     gameoverSound = Mix_LoadWAV("gameover.mp3");
     if (gameoverSound == nullptr) {
-        std::cerr << "Failed to load sound effect! SDL_mixer Error: " << Mix_GetError() << std::endl;
+        cout<< "Failed to load sound effect! SDL_mixer Error: " << Mix_GetError()  ; cout<< endl;
         exit(1);
     }
 
     bonusSound = Mix_LoadWAV("bonus_eat.mp3"); 
     if (bonusSound == nullptr) {
-        std::cerr << "Failed to load sound effect! SDL_mixer Error: " << Mix_GetError() << std::endl;
+       cout<<  "Failed to load sound effect! SDL_mixer Error: " << Mix_GetError() ; cout<< endl;
         exit(1);
     }
 
     bonusAppearSound = Mix_LoadWAV("bonus.mp3");
     if (bonusAppearSound == nullptr) {
-        std::cerr << "Failed to load sound effect! SDL_mixer Error: " << Mix_GetError() << std::endl;
+        cout<<  "Failed to load sound effect! SDL_mixer Error: " << Mix_GetError()  ; cout<< endl;
         exit(1);
     }
 
     SDL_Surface* loadedSurface = IMG_Load("back.png");
     if (loadedSurface == nullptr) {
-        std::cerr << "Unable to load image! SDL_image Error: " << IMG_GetError() << std::endl;
+        cout<<  "Unable to load image! SDL_image Error: " << IMG_GetError();  cout<< endl;
         exit(1);
     }
     backgroundTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
     SDL_FreeSurface(loadedSurface);
     if (backgroundTexture == nullptr) {
-        std::cerr << "Unable to create texture from image! SDL Error: " << SDL_GetError() << std::endl;
+        cout<<  "Unable to create texture from image! SDL Error: " << SDL_GetError(); cout<< endl;
         exit(1);
     }
 
     loadedSurface = IMG_Load("snakebody.jpg");
     if (loadedSurface == nullptr) {
-        std::cerr << "Unable to load image! SDL_image Error: " << IMG_GetError() << std::endl;
+        cout<< "Unable to load image! SDL_image Error: " << IMG_GetError() ; cout<< endl;
         exit(1);
     }
     snakeBodyTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
     SDL_FreeSurface(loadedSurface);
     if (snakeBodyTexture == nullptr) {
-        std::cerr << "Unable to create texture from image! SDL Error: " << SDL_GetError() << std::endl;
+       cout<<  "Unable to create texture from image! SDL Error: " << SDL_GetError() ; cout<< endl;
         exit(1);
     }
 
     loadedSurface = IMG_Load("fruit3.png");
     if (loadedSurface == nullptr) {
-        std::cerr << "Unable to load image! SDL_image Error: " << IMG_GetError() << std::endl;
+       cout<<  "Unable to load image! SDL_image Error: " << IMG_GetError() ; cout<< endl;
         exit(1);
     }
     fruitTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
     SDL_FreeSurface(loadedSurface);
     if (fruitTexture == nullptr) {
-        std::cerr << "Unable to create texture from image! SDL Error: " << SDL_GetError() << std::endl;
+        cout<<  "Unable to create texture from image! SDL Error: " << SDL_GetError() ; cout<< endl;
         exit(1);
     }
 
     loadedSurface = IMG_Load("bonusfruit.png");
     if (loadedSurface == nullptr) {
-        std::cerr << "Unable to load image! SDL_image Error: " << IMG_GetError() << std::endl;
+        cout<<  "Unable to load image! SDL_image Error: " << IMG_GetError() ; cout<< endl;
         exit(1);
     }
     bonusFruitTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
     SDL_FreeSurface(loadedSurface);
     if (bonusFruitTexture == nullptr) {
-        std::cerr << "Unable to create texture from image! SDL Error: " << SDL_GetError() << std::endl;
+        cout<<  "Unable to create texture from image! SDL Error: " << SDL_GetError() ; cout<< endl;
         exit(1);
     }
 
     loadedSurface = IMG_Load("obstacle.jpg");
     if (loadedSurface == nullptr) {
-        std::cerr << "Unable to load image! SDL_image Error: " << IMG_GetError() << std::endl;
+       cout<<  "Unable to load image! SDL_image Error: " << IMG_GetError() ; cout<< endl;
         exit(1);
     }
     obstacleTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
     SDL_FreeSurface(loadedSurface);
     if (obstacleTexture == nullptr) {
-        std::cerr << "Unable to create texture from image! SDL Error: " << SDL_GetError() << std::endl;
+       cout<< "Unable to create texture from image! SDL Error: " << SDL_GetError() ; cout<< endl;
         exit(1);
     }
 }
