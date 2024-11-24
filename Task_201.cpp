@@ -99,7 +99,7 @@ void initSDL() {
         exit(1);
     }
 
-    window = SDL_CreateWindow("Snake Game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("Snake Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (window == nullptr) {
         cout << "Window could not be created! SDL Error: " << SDL_GetError(); cout<< endl;
         exit(1);
@@ -233,7 +233,7 @@ void generateFood(bool isBonus) {
         food.x = rand() % (SCREEN_WIDTH / CELL_SIZE) * CELL_SIZE;
         food.y = rand() % (SCREEN_HEIGHT / CELL_SIZE) * CELL_SIZE;
         
-        for (const auto& obstacle : obstacles) {
+        for (const auto &obstacle : obstacles) {
             if (food.x == obstacle.x && food.y == obstacle.y) {
                 validPosition = false;
                 break;
@@ -257,7 +257,7 @@ void render() {
     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
     SDL_RenderClear(renderer);
 
-    SDL_Rect renderQuad = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+    SDL_Rect renderQuad = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
     SDL_RenderCopy(renderer, backgroundTexture, NULL, &renderQuad);
 
     if (gameState == MENU) {
@@ -272,7 +272,7 @@ void render() {
         renderText("Main Menu", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 + 100,  {255, 255, 153, 255});
     }
     else if (gameState == PLAYING) {
-        for (const auto& segment : snake) {
+        for (const auto &segment : snake) {
             SDL_Rect fillRect = { segment.x, segment.y, CELL_SIZE, CELL_SIZE };
             SDL_RenderCopy(renderer, snakeBodyTexture, NULL, &fillRect);
         }
@@ -309,39 +309,6 @@ void handleEvents() {
             quit = true;
         } else if (e.type == SDL_KEYDOWN) {
             switch (e.key.keysym.sym) {
-                case SDLK_RETURN:
-                    if (gameState == MENU) {
-                        gameState = PLAYING;
-                        resetGame(false);
-                    } else if (gameState == GAME_OVER) {
-                        gameState = PLAYING;
-                        resetGame(false);
-                    }
-                    break;
-                case SDLK_l:
-                    if (gameState == MENU) {
-                        gameState = LEVEL_MENU;
-                    }
-                    break;
-                case SDLK_1:
-                    if (gameState == LEVEL_MENU) {
-                        level = 1;
-                        gameState = PLAYING;
-                        resetGame(false);
-                    }
-                    break;
-                case SDLK_2:
-                    if (gameState == LEVEL_MENU) {
-                        level = 2;
-                        gameState = PLAYING;
-                        resetGame(false);
-                    }
-                    break;
-                case SDLK_ESCAPE:
-                    if (gameState == LEVEL_MENU) {
-                        gameState = MENU;
-                    }
-                    break;
                 case SDLK_q:
                     quit = true;
                     break;
@@ -458,7 +425,7 @@ void update() {
 
 
 bool checkCollision(int x, int y) {
-    for (const auto& segment : snake) {
+    for (const auto &segment : snake) {
         if (segment.x == x && segment.y == y) {
             return true;
         }
@@ -514,7 +481,7 @@ void generateObstacles() {
             obstacle.x = rand() % (SCREEN_WIDTH / CELL_SIZE) * CELL_SIZE;
             obstacle.y = rand() % (SCREEN_HEIGHT / CELL_SIZE) * CELL_SIZE;
 
-            for (const auto& segment : snake) {
+            for (const auto &segment : snake) {
                 if (obstacle.x == segment.x && obstacle.y == segment.y) {
                     validPosition = false;
                     break;
